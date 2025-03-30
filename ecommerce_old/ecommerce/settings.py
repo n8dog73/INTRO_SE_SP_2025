@@ -11,11 +11,6 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-import environ
-import os
-
-env = environ.Env()
-environ.Env.read_env(os.path.join("..", '.env'))  # Ensure this points to your .env file
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-m5upe@xh@@6&#3zbgs)gvm_(#7wo=(y@iv41)^(=qzxo6v983z"
+SECRET_KEY = "django-insecure-_@&jeis%3@7_d6e$2_&rtm&7it87^1z&3+fa8^@!cpani8aiu*"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -42,7 +37,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "ecommerceapp.apps.EcommerceappConfig",
 ]
 
 MIDDLEWARE = [
@@ -79,20 +73,16 @@ WSGI_APPLICATION = "ecommerce.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-
-
-
 DATABASES = {
-    "default": {
-        "ENGINE": 'django.db.backends.mysql',
-        "NAME": env('DB_NAME'),
-        "USER": env('DB_USER'),
-        "PASSWORD": env('DB_PASSWORD'),
-        "HOST": env('DB_HOST', default='localhost'),
-        #'PORT': env('DB_PORT', default='3307'),
-    }
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'Ecommerce_db',
+        'USER': 'root',
+        'PASSWORD': 'password123',
+        'HOST': 'localhost',
+        'PORT': '3306',
+        }
 }
-
 
 
 # Password validation
