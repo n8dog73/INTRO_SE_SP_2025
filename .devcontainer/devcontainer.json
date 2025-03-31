@@ -3,6 +3,6 @@
 	"features": {
 		"ghcr.io/devcontainers-extra/features/mysql-homebrew:1": {}
 	},
-	"forwardPorts": [3306]
+	"forwardPorts": [3307]
 	
 }
