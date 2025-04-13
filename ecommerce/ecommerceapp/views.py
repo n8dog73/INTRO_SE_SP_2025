@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from .models import UserProfile, Product, Seller
 from .forms import RegisterForm, UserProfileForm, SellerForm
 from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
 def home(request):
@@ -51,4 +52,15 @@ def add_seller(request):
         form = SellerForm()
 
     return render(request, 'main/add_seller.html', {'form': form})
+
+@login_required
+def delete_account(request):
+    if request.method == 'POST':
+        user = request.user
+        logout(request)  # Log out the user before deleting
+        user.delete()
+        messages.success(request, "Your account has been deleted successfully.")
+        return redirect('home')  # or wherever you want to send them after deletion
+
+    return render(request, 'registration/delete_account.html')
 

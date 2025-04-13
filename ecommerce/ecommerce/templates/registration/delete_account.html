@@ -1,0 +1,29 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Delete Account{% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<h1>Are you sure you want to delete your account?</h1>
+<p>This action cannot be undone.</p>
+<p>All your data will be permanently deleted.</p>
+<p>If you are sure, please click the button below.</p>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-info" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+<p>Note: If you have any pending orders, please cancel them before deleting your account.</p>
+<p>Note: If you are a seller, please remove your products before deleting your account.</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Yes, delete my account</button>
+    <a href="{% url 'home' %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

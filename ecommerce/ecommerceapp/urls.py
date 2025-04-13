@@ -10,5 +10,6 @@ urlpatterns = [
     path('update_profile/', views.update_profile, name='update_profile'),
     path('add_seller/', views.add_seller, name='add_seller'),
     path('cart/', include('cart.urls')),
+     path('delete_account/', views.delete_account, name='delete_account'),
    
 ]
