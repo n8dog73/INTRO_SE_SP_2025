@@ -1,4 +1,9 @@
 from django.db import models
+import os
+
+def product_image_upload_path(instance, filename):
+    # Ensures images are always uploaded to the 'products/' folder
+    return os.path.join('products', filename)
 
 class Product(models.Model):
     name = models.CharField(max_length=255)
@@ -10,7 +15,7 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     category = models.CharField(max_length=50)
-    image = models.ImageField(upload_to='products/')
+    image = models.ImageField(upload_to=product_image_upload_path)
     sellerProduct = models.CharField(max_length=255)
 
 class Seller(models.Model):
