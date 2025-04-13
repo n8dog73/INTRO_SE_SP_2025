@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import Product
-from .forms import RegisterForm
+from .models import UserProfile, Product, Seller
+from .forms import RegisterForm, UserProfileForm, SellerForm
 from django.contrib.auth import login, logout, authenticate
+from django.contrib import messages
 
 def home(request):
     products = Product.objects.all()
@@ -15,8 +16,39 @@ def sign_up(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('/home')
+            return redirect('/update_profile')  # Redirect to the update profile page
     else:
         form = RegisterForm()
 
     return render(request, 'registration/sign_up.html', {'form': form})
+
+def update_profile(request):
+    user_profile, created = UserProfile.objects.get_or_create(user=request.user)  # Get the current user's UserProfile
+    #user_profile = request.user.userprofile  # Get the current user's UserProfile
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, instance=user_profile)
+        if form.is_valid():
+            form.save()
+            return redirect('home')  # Redirect to the home page or another page
+    else:
+        form = UserProfileForm(instance=user_profile)
+    return render(request, 'registration/update_profile.html', {'form': form})
+
+def logout_user(request):
+    logout(request)
+    messages.success(request, "You have been logged out.")
+    return redirect('/home')
+
+def add_seller(request):
+    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+    if request.method == 'POST':
+        form = SellerForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Seller added successfully.")
+            return redirect('home')  # Or any success page
+    else:
+        form = SellerForm()
+
+    return render(request, 'main/add_seller.html', {'form': form})
+

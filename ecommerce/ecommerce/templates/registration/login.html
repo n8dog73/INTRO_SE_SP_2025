@@ -6,25 +6,12 @@
 
 {% block content %}
 <h1>Login</h1>
+
 <form method="post">
     {% csrf_token %}
     {{ form|crispy }}
+    <p>Forgot your password? Reset it <a href="/ecommerceapp/reset-password">Here</a>!</p>
     <p>Don't have an account? Create one <a href="/ecommerceapp/sign-up">Here</a>!</p>
     <button type="submit" class="btn btn-success">Login</button>
 </form>
 {% endblock %}
-
-<!--<!DOCTYPE html>
-<html>
-<head>
-    <title>Login</title>
-</head>
-<body>
-    <h1>Login</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Login</button>
-    </form>
-</body>
-</html>-->

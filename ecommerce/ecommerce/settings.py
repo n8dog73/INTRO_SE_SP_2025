@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "ecommerceapp.apps.EcommerceappConfig",
     "crispy_forms",
     "crispy_bootstrap5",
+    "cart",
           # Your app name
 ]
 
