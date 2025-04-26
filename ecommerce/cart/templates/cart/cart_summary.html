@@ -11,7 +11,7 @@
             <h2>Items in Cart</h2>
             <ul>
                 {% for item in cart_items %}
-                    <li>Item ID: {{ item.id }}, Quantity: {{ item.quantity }} x ${{ item.price }}</li>
+                    <li>Product Name: {{item.product}} | Item ID: {{ item.id }} | Quantity: {{ item.quantity }} x ${{ item.price }}</li>
                 {% endfor %}
             </ul>
         </div>

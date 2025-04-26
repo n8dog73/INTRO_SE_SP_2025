@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import UserProfile, Product, Seller
+from .models import UserProfile, Product, Seller, PurchaseOrder, OrderItem
 from .forms import RegisterForm, UserProfileForm, SellerForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
@@ -64,3 +64,6 @@ def delete_account(request):
 
     return render(request, 'registration/delete_account.html')
 
+def order_tracking(request):
+    orders = PurchaseOrder.objects.filter(user=request.user).order_by('-created_at')
+    return render(request, 'orders/order_tracking.html', {'orders': orders})
