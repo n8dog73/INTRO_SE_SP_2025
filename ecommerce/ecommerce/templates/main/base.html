@@ -49,7 +49,12 @@
                   </a>
                   <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <li><a class="dropdown-item" href="/update_profile">Update Profile</a></li>
-                    <li><a class="dropdown-item" href="/add_seller">Become a Seller</a></li>
+                    {% if user.is_authenticated and user_profile and user_profile.company_name %}
+                        <li><a class="dropdown-item" href="{% url 'seller_dashboard' %}">Seller Dashboard</a></li>                        </li>
+                    {% else %}
+                        <li><a class="dropdown-item" href="/add_seller">Become a Seller</a></li>
+                    {% endif %}
+                    <li><a class="dropdown-item" href="{% url 'view_orders' %}">View Orders</a></li>
                     <li><a class="dropdown-item" href="/delete_account">Delete Account</a></li>
                     <li><hr class="dropdown-divider" /></li>
                     <li><a class="dropdown-item" href="/logout">Logout</a></li>

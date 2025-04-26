@@ -1,0 +1,14 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Check Out{% endblock %}
+
+
+
+{% block content %}
+    <h1>Checkout Successful</h1>
+        <p>Thank you for your order!</p>
+        <p>Order ID: {{ order.id }}</p>
+        <p>Total Price: ${{ order.total_price }}</p>
+        <a href="{% url 'home' %}">Back to Home</a>
+        <a href="{% url 'order_tracking' %}">Track Your Order</a>
+{%endblock %}

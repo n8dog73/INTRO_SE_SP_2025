@@ -6,6 +6,28 @@
 
 {% block content %}
     <h1>E-Commerce Products</h1>
+
+    <form method="get" action="{% url 'home' %}" class="d-flex mb-4">
+        <input
+          class="form-control me-2"
+          type="search"
+          name="q"
+          placeholder="Search products"
+          value="{{ request.GET.q }}"
+          aria-label="Search"
+        />
+        <select class="form-select me-2" name="category">
+          <option value="">All Categories</option>
+          {% for category in categories %}
+            <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"s" %}selected{% endif %}>
+              {{ category.name }}
+            </option>
+          {% endfor %}
+        </select>
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form>
+
+
     <div class="row">
         {% for product in products %}
             

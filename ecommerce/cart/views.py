@@ -32,6 +32,7 @@ def remove_from_cart(request, item_id):
 from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import path
+from ecommerceapp.models import Product, PurchaseOrder, OrderItem, Seller
 from . import views
 
 
@@ -43,7 +44,7 @@ def cart_summary(request):
     #cart_items = request.session.get('cart', [])
     #total_price = sum(item['price'] for item in cart)
     total_price = sum(item['price'] * item['quantity'] for item in cart)
-    print(f"Total Price: {total_price}")  # Debugging: Print the total price
+    print(f"Product: {cart}")  # Debugging: Print the total price
     return render(request, 'cart/cart_summary.html', {'cart_items': cart, 'total_price': total_price})
 
 def add_to_cart(request, product_id):
@@ -57,7 +58,7 @@ def add_to_cart(request, product_id):
     from ecommerceapp.models import Product
     try:
         product = Product.objects.get(id=product_id)
-        product_name = Product.objects.get(id=product_id).name
+        product_name = product.name #Product.objects.get(id=product_id).name
         product_price = float(product.price)
     except Product.DoesNotExist:
         return redirect('cart_summary')
@@ -111,20 +112,84 @@ def update_cart(request):
 def checkout(request):  
     # Logic to handle checkout process
     cart = request.session.get('cart', [])
-    total_price = sum(item['price'] * item['quantity'] for item in cart)
+    if not cart:
+        return redirect('cart_summary')
+
+    # Create an order
+    order = PurchaseOrder.objects.create(user=request.user)
+    total_price = 0
+
+    for item in cart:
+        product = Product.objects.get(id=item['id'])
+        
+          # Ensure the product has a valid sellerProduct
+        if not product.sellerProduct:
+            default_seller = Seller.objects.first()
+            if default_seller:
+                product.sellerProduct = default_seller
+                product.save()
+            else:
+                return redirect('cart_summary')  # Handle the case where no default seller exists
+        
+        quantity = item['quantity']
+        price = product.price * quantity
+        total_price += price
+
+        # Create an OrderItem
+        OrderItem.objects.create(porder=order, product=product, quantity=quantity, price=price, sellerProduct=product.sellerProduct)
+        # Check if the product is available in stock
+        if product.quantity < quantity:
+            messages.error(request, f"Not enough stock for {product.name}.")
+            return redirect('cart_summary')
+
+        # Reduce product quantity
+        product.quantity -= quantity
+        product.save()
+
+    # Update the total price of the order
+    order.total_price = total_price
+    order.save()
+
+    # Clear the cart
+    request.session['cart'] = []
+    print(f"Order Retrieved: ID={order.id}, Total Price={order.total_price}")  # Debugging
+    return render(request, 'cart/payment_page.html', {'order': order})
+    #cart = request.session.get('cart', [])
+    #total_price = sum(item['price'] * item['quantity'] for item in cart)
     
     # Here you would typically handle payment processing and order creation
-    return render(request, 'cart/checkout.html', {'cart_items': cart, 'total_price': total_price})
+    #return render(request, 'cart/checkout.html', {'cart_items': cart, 'total_price': total_price})
 
-def checkout_success(request):
-    # Logic to handle successful checkout
-    cart = request.session.get('cart', [])
+def checkout_success(request, order_id):
+    try:
+        order = PurchaseOrder.objects.get(id=order_id, user=request.user)
+    except PurchaseOrder.DoesNotExist:
+        return redirect('cart_summary')
+
+    return render(request, 'cart/checkout_success.html', {'order': order})
     
-    # Clear the cart after successful checkout
-    request.session['cart'] = []
-    
-    return render(request, 'cart/checkout_success.html', {'cart_items': cart})
+   
 
 def clear_cart(request):
     request.session['cart'] = []
     return redirect('cart_summary')
+
+def payment_page(request, order_id):
+    try:
+        order = PurchaseOrder.objects.get(id=order_id, user=request.user)
+        print(f"Order Retrieved: ID={order.id}, Total Price={order.total_price}")  # Debugging
+    except PurchaseOrder.DoesNotExist:
+        return redirect('cart_summary')
+
+    if request.method == 'POST':
+        # Log payment information
+        payment_method = request.POST.get('payment_method', 'Credit Card')
+        transaction_id = request.POST.get('transaction_id', '123456789')  # Simulated transaction ID
+        order.payment_method = payment_method
+        order.payment_status = 'Completed'
+        order.transaction_id = transaction_id
+        order.save()
+
+        return redirect('checkout-success', order_id=order.id)
+
+    return render(request, 'cart/payment_page.html', {'order': order})

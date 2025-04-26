@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Seller, UserProfile, Product, Category
+from .models import Seller, UserProfile, Product, Category, PurchaseOrder
 from django.contrib.auth.models import User
 
 # Register your models here.
@@ -15,6 +15,7 @@ class ProductAdmin(admin.ModelAdmin):
 admin.site.register(Seller)
 admin.site.register(UserProfile)
 admin.site.register(Category)
+admin.site.register(PurchaseOrder)
 
 
 class UserProflieAttributes(admin.StackedInline):
