@@ -1,0 +1,38 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Products{% endblock %}
+
+
+
+{% block content %}
+    <h1>Shopping Cart</h1>
+    <div class="row">
+        <div class="col">
+            <h2>Items in Cart</h2>
+            <ul>
+                {% for item in cart_items %}
+                    <li>Product Name: {{item.product}} | Item ID: {{ item.id }} | Quantity: {{ item.quantity }} x ${{ item.price }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col">
+            <h2>Total Price</h2>
+            <p>${{ total_price }}</p>
+        </div>
+        <div class="col">
+            <h2>Actions</h2>
+            <form method="post" action="{% url 'checkout' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success">Checkout</button>
+            </form>
+            <form method="post" action="{% url 'clear_cart' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Clear Cart</button>
+            </form>
+            <form method="post" action="{% url 'home' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">Continue Shopping</button>   
+            </form>
+        </div>
+    </div>  
+{% endblock %}

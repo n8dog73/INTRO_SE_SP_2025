@@ -1,0 +1,14 @@
+{% extends 'main/base.html' %} {% block title %}Delete Product{% endblock %} 
+
+
+
+{% load crispy_forms_tags %} {% block content %}
+
+<h1>Delete Product</h1>
+<p>Are you sure you want to delete "{{ product.name }}"?</p>
+<form method="post">
+  {% csrf_token %}
+  <button type="submit">Yes, delete</button>
+  <a href="{% url 'seller_dashboard' %}">Cancel</a>
+</form>
+{% endblock %}

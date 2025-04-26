@@ -1,0 +1,22 @@
+{% extends 'main/base.html' %} {% block title %}Seller Dashboard {% endblock %} 
+
+
+
+{% load crispy_forms_tags %} {% block content %}
+
+<h1>My Products</h1>
+<a href="{% url 'add_product' %}">Add New Product</a>
+<ul>
+  {% for product in products %}
+    <li>{{ product.name }} - ${{ product.price }}
+        <a href="{% url 'edit_product' product.pk %}" class="btn btn-success">Edit</a>
+      <form action="{% url 'delete_product' product.pk %}" method="post" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit">Delete</button>
+      </form>
+    </li>
+  {% empty %}
+    <li>No products found.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Update Profile{% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+<h1>Update Profile</h1>
+<form method="post" action="{% url 'update_profile' %}">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button type="submit" class="btn btn-success">Update</button>
+  </form>
+  
+  <!-- Form for creating a new seller -->
+  <form method="get" action="{% url 'add_seller' %}">
+    <button type="submit" class="btn btn-success">New Seller</button>
+  </form>
+<!--<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button type="submit"<a href="{% url 'add_seller' %}" class="btn btn-success">New Seller</a>
+    <button type="submit" class="btn btn-success">Update</button>
+</form>-->
+{% endblock %}

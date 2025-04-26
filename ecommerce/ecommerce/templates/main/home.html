@@ -1,0 +1,53 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Products{% endblock %}
+
+
+
+{% block content %}
+    <h1>E-Commerce Products</h1>
+
+    <form method="get" action="{% url 'home' %}" class="d-flex mb-4">
+        <input
+          class="form-control me-2"
+          type="search"
+          name="q"
+          placeholder="Search products"
+          value="{{ request.GET.q }}"
+          aria-label="Search"
+        />
+        <select class="form-select me-2" name="category">
+          <option value="">All Categories</option>
+          {% for category in categories %}
+            <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"s" %}selected{% endif %}>
+              {{ category.name }}
+            </option>
+          {% endfor %}
+        </select>
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form>
+
+
+    <div class="row">
+        {% for product in products %}
+            
+            <div class="col">
+                <div class="card" style="width: 18rem;">
+                    <img src="products/{{product.image}}" class="card-img-top" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">{{product.name}}</h5>
+                      <p class="card-text">{{product.price}}</p>
+                        <p class="card-text">{{product.description}}</p>
+                        <p class="card-text">{{product.category}}</p>
+                      <!--<a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary">Add to Cart</a>-->
+                        <form method="post" action="{% url 'add_to_cart' product.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="product_id" value="{{ product.id }}">
+                            <button type="submit" class="btn btn-primary">Add to Cart</button>
+                        </form>
+                    </div>
+                  </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
