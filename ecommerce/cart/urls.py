@@ -1,5 +1,6 @@
 from django.urls import path, include
 from . import views
+from ecommerceapp import views as ecommerce_views
 
 urlpatterns = [
     path('', views.views.cart_summary, name="cart_summary"),
@@ -15,4 +16,5 @@ urlpatterns = [
     #path('checkout/', views.checkout, name='checkout'),
     path('', views.cart_summary, name='cart_summary'),
     path('payment/<int:order_id>/', views.payment_page, name='payment_page'),
+    path('orders/view_orders.html', ecommerce_views.view_orders, name='view_orders'),
 ]
