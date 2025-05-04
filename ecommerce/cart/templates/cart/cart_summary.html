@@ -18,6 +18,9 @@
         <div class="col">
             <h2>Total Price</h2>
             <p>${{ total_price }}</p>
+            {% if user.is_authenticated %}
+                <p>Available Balance: ${{ user.userprofile.cashamount }}</p>
+            {% endif %}
         </div>
         <div class="col">
             <h2>Actions</h2>

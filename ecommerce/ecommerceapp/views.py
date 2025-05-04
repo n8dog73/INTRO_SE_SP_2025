@@ -6,6 +6,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
+from decimal import Decimal
 from django.db.models import Q
 
 def home(request):
@@ -36,15 +37,30 @@ def sign_up(request):
 
 def update_profile(request):
     user_profile, created = UserProfile.objects.get_or_create(user=request.user)  # Get the current user's UserProfile
+    form = UserProfileForm(instance=user_profile)
     #user_profile = request.user.userprofile  # Get the current user's UserProfile
     if request.method == 'POST':
-        form = UserProfileForm(request.POST, instance=user_profile)
-        if form.is_valid():
-            form.save()
-            return redirect('home')  # Redirect to the home page or another page
+        if 'add_funds' in request.POST:
+            try:
+                amount = Decimal(request.POST.get('amount', '0'))
+                if amount > 0:
+                    user_profile.cashamount += amount
+                    user_profile.save()
+                    #user_profile.refresh_from_db()  # Refresh the instance to get the updated value
+                    messages.success(request, f"${amount} has been added to your account.")
+                else:
+                    messages.error(request, "Please enter a valid amount greater than 0.")
+            except ValueError:
+                messages.error(request, "Invalid amount entered.")
+        else:
+            form = UserProfileForm(request.POST, instance=user_profile)
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Profile updated successfully.")
+                return redirect('home')  # Redirect to the home page or another page
     else:
         form = UserProfileForm(instance=user_profile)
-    return render(request, 'registration/update_profile.html', {'form': form})
+    return render(request, 'registration/update_profile.html', {'form': form, 'user_profile': user_profile})
 
 def logout_user(request):
     logout(request)
@@ -90,6 +106,7 @@ def seller_dashboard(request):
     else:
         try:
             seller = Seller.objects.get(name=user_profile.company_name)
+            cashamount = seller.cashamount
         except Seller.DoesNotExist:
             messages.error(request, "Seller not found.")
             return redirect('home')
@@ -106,7 +123,7 @@ def seller_dashboard(request):
         else:
             form = ProductForm()
             print(user_profile, products)
-        return render(request, 'seller/dashboard.html', {'products': products})
+        return render(request, 'seller/dashboard.html', {'products': products, 'seller':seller, 'cashamount': cashamount})
     
 @login_required
 def add_product(request):

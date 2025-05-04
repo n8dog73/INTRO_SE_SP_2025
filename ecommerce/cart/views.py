@@ -1,38 +1,11 @@
-'''from django.shortcuts import render, redirect, get_object_or_404
-from .models import Cart, CartItem
-from ecommerceapp.models import Product
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-
-@login_required
-def cart_summary(request):
-    cart, created = Cart.objects.get_or_create(user=request.user)
-    cart_items = cart.items.all()
-    total_price = sum(item.product.price * item.quantity for item in cart_items)
-    return render(request, 'cart/cart_summary.html', {'cart_items': cart_items, 'total_price': total_price})
-
-@login_required
-def add_to_cart(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
-    cart, created = Cart.objects.get_or_create(user=request.user)
-    cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
-    if not created:
-        cart_item.quantity += 1
-        cart_item.save()
-    messages.success(request, f"{product.name} added to cart.")
-    return redirect('cart_summary')
-
-@login_required
-def remove_from_cart(request, item_id):
-    cart_item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
-    cart_item.delete()
-    messages.success(request, "Item removed from cart.")
-    return redirect('cart_summary')'''
-
 from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import path
+from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.decorators import login_required
 from ecommerceapp.models import Product, PurchaseOrder, OrderItem, Seller
+from django.contrib import messages
+from django.db import transaction
 from . import views
 
 
@@ -47,13 +20,12 @@ def cart_summary(request):
     print(f"Product: {cart}")  # Debugging: Print the total price
     return render(request, 'cart/cart_summary.html', {'cart_items': cart, 'total_price': total_price})
 
+
 def add_to_cart(request, product_id):
     # Logic to add item to cart
-    #product_id = request.POST.get('product_id')
-    #print(product_id)
-    #product_price = float(request.POST.get('product_price'))
-    #print(product_price)
-    #cart = request.session.get('cart', [])
+    # Check if the user is authenticated
+    if not request.user.is_authenticated:
+        return redirect('login')
     print(f"Product ID: {product_id}")
     from ecommerceapp.models import Product
     try:
@@ -78,21 +50,6 @@ def add_to_cart(request, product_id):
     print(cart)
     return redirect('cart_summary')  # Redirect to cart summary page
     #return render(request, 'cart/cart_summary.html', {'cart_items': cart})
-
-"""def remove_from_cart(request, item_id):
-    # Logic to remove item from cart
-    #item_id = request.POST.get('item_id')
-    print(f"Item ID: {item_id}")
-    cart = request.session.get('cart', [])
-    print(cart)
-    if item_id =='all':
-        # Clear the entire cart
-        cart = []
-    else:
-        cart = [item for item in cart if str(item['id']) != str(item_id)]
-    request.session['cart'] = cart
-    return redirect('cart_summary')  # Redirect to cart summary page"""
-    
 
 def update_cart(request):
     # Logic to update item quantity in cart
@@ -165,8 +122,52 @@ def checkout_success(request, order_id):
         order = PurchaseOrder.objects.get(id=order_id, user=request.user)
     except PurchaseOrder.DoesNotExist:
         return redirect('cart_summary')
+    user_profile = request.user.userprofile
 
-    return render(request, 'cart/checkout_success.html', {'order': order})
+    # Calculate the total price of the order
+    total_price = sum(item.price * item.quantity for item in order.items.all())
+
+    if user_profile.cashamount < total_price:
+        order.delete()  # Delete the order if insufficient funds
+        messages.error(request, "Insufficient funds in your account to complete the purchase.")
+        return redirect('cart_summary')  # Redirect back to the cart if insufficient funds
+
+    # Check if the user has enough cashamount
+    if user_profile.cashamount >= total_price:
+        # Deduct the total price from the user's cashamount
+        user_profile.cashamount -= total_price
+        user_profile.save()
+
+        item_details = []
+        for item in order.items.all():
+            seller = item.product.sellerProduct
+            amount = item.price * item.quantity
+            seller.cashamount += amount
+            seller.save()
+
+
+            item_details.append({
+                'seller': seller.name,
+                'amount': amount
+            })
+
+        # Update the order status to 'Completed'
+        order.payment_status = 'Completed'
+        order.save()
+
+        messages.success(request, "Purchase successful! Your account has been charged.")
+    else:
+        messages.error(request, "Insufficient funds in your account to complete the purchase.")
+        return redirect('cart_summary')  # Redirect back to the cart if insufficient funds
+    
+    #items_details = [
+    #    {'seller':item.product.sellerProduct.name,
+    #     'amount':item.price * item.quantity
+    #     }
+    #     for item in order.items.all()
+    #]
+    print(f"Item Details: {item_details}")  # Debugging
+    return render(request, 'cart/checkout_success.html', {'order': order, 'remaining_cash': user_profile.cashamount,'item_details': item_details})
     
    
 

@@ -9,6 +9,15 @@
         <p>Thank you for your order!</p>
         <p>Order ID: {{ order.id }}</p>
         <p>Total Price: ${{ order.total_price }}</p>
+        <p>Remaining Balance: <strong>${{ remaining_cash }}</strong></p>
+
+        <h2>Funds Transferred to Sellers</h2>
+        <ul>
+            {% for item in item_details %}
+                <li>Seller: {{ item.seller }} - Amount: ${{ item.amount }}</li>
+            {% endfor %}
+        </ul>
+
         <a href="{% url 'home' %}">Back to Home</a>
         <a href="{% url 'view_orders' %}">View Orders</a>
 {%endblock %}
