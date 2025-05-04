@@ -12,7 +12,7 @@ urlpatterns = [
     path('cart/', include('cart.urls')),
     path('delete_account/', views.delete_account, name='delete_account'),
     #path('checkout/', views.checkout, name='checkout'),
-    path('order-tracking/', views.order_tracking, name='order_tracking'),
+    #path('order-tracking/', views.order_tracking, name='order_tracking'),
     #path('', views.cart_summary, name='cart_summary'),
     path('seller/dashboard/', views.seller_dashboard, name='seller_dashboard'),
     path('seller/product/add/', views.add_product, name='add_product'),

@@ -3,6 +3,11 @@
 
 
 {% load crispy_forms_tags %} {% block content %}
+<h1>Welcome to Your Seller Dashboard</h1>
+
+    <p><strong>Seller Name:</strong> {{ seller.name }}</p>
+    <p><strong>Available Balance:</strong> ${{ cashamount }}</p>
+<h1></h1>
 
 <h1>My Products</h1>
 <a href="{% url 'add_product' %}">Add New Product</a>

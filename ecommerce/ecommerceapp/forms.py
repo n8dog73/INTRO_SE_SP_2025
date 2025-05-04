@@ -15,7 +15,7 @@ class UserProfileForm(forms.ModelForm):
     
     class Meta:
         model = UserProfile
-        fields = ['phone_number', 'address', 'state', 'city', 'zip_code']
+        fields = ['phone_number', 'address', 'state', 'city', 'zip_code', 'cashamount']
         widgets = {
             'phone_number': forms.TextInput(attrs={'placeholder': 'Phone Number'}),
             'address': forms.Textarea(attrs={'placeholder': 'Address'}),

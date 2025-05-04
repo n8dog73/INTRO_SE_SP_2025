@@ -10,3 +10,26 @@ The E-Commerce Platform is a web application that will allow users to search, co
 Objectives:
 The E-Commerce Platform is a new system that developed from the ground up. Users will access the web interface to search for products from multiple sellers.  The sellers will have a separate web interface to add, sell, and receive payments. The administrators of the website will have a separate web interface to approve or block new user accounts and products as well as oversee other user actions. 
 
+5/4/2025
+System Setup:
+1. Create an Ecommerce_db mysql database.  The database will be controlled by the python scripts created in teh Django project, ecommerce
+2. Start the MySQL database by running 'sudo service mysql start'
+3. Check status of the mysql database running 'sudo service mysql status'
+4. cd to ecommerce/
+5. Migrate classes to create the Ecommerce_db database by performing the following:
+    5.1. python manage.py makemigrations
+    5.2. python manage.py migrate.
+6. The Ecommerce_db should have database tables created by perfoming the above.
+7. Run python manage.py runserver to start the E-Commerce Platform server. 
+
+A development container was created in .devcontainer/devcontainer.json with the following code. This was to connect the mysql-homebrew system to interface with the database. 
+
+{
+	"image": "mcr.microsoft.com/devcontainers/universal:2",
+	"features": {
+		"ghcr.io/devcontainers-extra/features/mysql-homebrew:1": {}
+	},
+	"forwardPorts": [3307]
+	
+}
+

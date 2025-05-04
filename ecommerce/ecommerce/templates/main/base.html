@@ -54,6 +54,9 @@
                     {% else %}
                         <li><a class="dropdown-item" href="/add_seller">Become a Seller</a></li>
                     {% endif %}
+                    {% if user.is_authenticated and user.is_staff %}
+                        <li><a class="dropdown-item" href="{% url 'admin:index' %}">Admin Dashboard</a></li>                        </li>
+                    {% endif %}
                     <li><a class="dropdown-item" href="{% url 'view_orders' %}">View Orders</a></li>
                     <li><a class="dropdown-item" href="/delete_account">Delete Account</a></li>
                     <li><hr class="dropdown-divider" /></li>
