@@ -22,3 +22,14 @@ System Setup:
 6. The Ecommerce_db should have database tables created by perfoming the above.
 7. Run python manage.py runserver to start the E-Commerce Platform server. 
 
+A development container was created in .devcontainer/devcontainer.json with the following code. This was to connect the mysql-homebrew system to interface with the database. 
+
+{
+	"image": "mcr.microsoft.com/devcontainers/universal:2",
+	"features": {
+		"ghcr.io/devcontainers-extra/features/mysql-homebrew:1": {}
+	},
+	"forwardPorts": [3307]
+	
+}
+
